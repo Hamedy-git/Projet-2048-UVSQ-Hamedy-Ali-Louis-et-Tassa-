@@ -60,6 +60,8 @@ class Game2048:
                 self.mettre_a_jour_interface()
                 if self.est_fin_de_jeu():
                     self.afficher_fin_jeu()
-                    
+
+    
+
 if __name__ == "__main__":
     MenuPrincipal()
