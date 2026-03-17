@@ -2,49 +2,64 @@ import tkinter as tk
 import random
 import json
 
-case_taille = 100
-canvas_grid = 4
+#parametres du jeu
+taille_case = 100
+taille_grille = 4
 marge = 4
+couleur_fond = "beige"
+couleur_case_vide = "gray"
+couleurs_bloc = {
+    2: "#EEE4DA", 4: "#EDE0C8", 8: "#F2B179", 16: "#F59563",
+    32: "#F67C5F", 64: "#F65E3B", 128: "#EDCF72", 256: "#EDCC61",
+    512: "#EDC850", 1024: "#EDC53F", 2048: "#EDC22E"
+}
+couleurs_texte = {2: "#776E65", 4: "#776E65", 8: "#F9F6F2"}
 
 class MenuPrincipal:
     def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("2048 - Menu")
-        self.root.geometry("300x200")
-        self.root.configure(bg="beige")
+        self.fenetre = tk.Tk()
+        self.fenetre.title("2048 - Menu")
+        self.fenetre.geometry("300x200")
+        self.fenetre.configure(bg="beige")
 
-        titre = tk.Label(self.root, text="2048", font=("Arial", 32, "bold"), bg="beige")
+        titre = tk.Label(self.fenetre, text=2048, font=("Arial", 32, "bold"), bg="beige")
         titre.pack(pady=20)
 
-        self.root.mainloop()
+        bouton_jouer = tk.Button(self.fenetre, text="Jouer", font=("Arial", 16), command=self.lancer_jeu, bg="#8BC34A", fg="white")
+        bouton_jouer.pack(pady=10)
+
+        bouton_quitter = tk.Button(self.fenetre, text="Quitter", font=("Arial", 12), command=self.fenetre.destroy, bg="red", fg="white")
+        bouton_quitter.pack(pady=5)
+
+        self.fenetre.mainloop()
 
     def lancer_jeu(self):
-        self.root.destroy() # Ferme le jeu
-        Game2048() # Lance le jeu 
+        self.fenetre.destroy()
+        Game2048()
 
 
 class Game2048:
     def __init__(self):
-        self.racine = tk.Tk()
-        self.racine.title("2048")
-        self.racine.resizable(False, False)
-        self.grid = [[0] * canvas_grid for _ in range(canvas_grid)]
-        self.init_ui() # initialise l'interface
-        self.charger_progression() # Charge une sauvegarde 
-        self.interface()  # dessine la grille
-        self.racine.bind("<Key>", self.touches) # Lie les touches 
-        self.racine.mainloop()
+        self.fenetre = tk.Tk()
+        self.fenetre.title("2048")
+        self.fenetre.resizable(False, False)
+        self.grille = [[0] * taille_grille for _ in range(taille_grille)]
+        self.creer_interface()
+        self.charger_sauvegarde()
+        self.mettre_a_jour_interface()
+        self.fenetre.bind("<Key>", self.touches)
+        self.fenetre.mainloop()
 
     
-    def cree_block(self): # Ajoute un nouveau block (2 ou 4) à un emplacement vide
-        case_vide = [(i, j) for i in range(canvas_grid) for j in range(canvas_grid) if self.grid[i][j] == 0]
-        if case_vide:
-            i, j = random.choice(case_vide)
-            self.grid[i][j] = 2 if random.random() < 0.9 else 4
 
-
-
-
-    
+    def touches(self, event):
+        if event.keysym in ("Up", "Down", "Left", "Right"):
+            deplace = self.deplacer(event.keysym)
+            if deplace:
+                self.ajouter_bloc()
+                self.mettre_a_jour_interface()
+                if self.est_fin_de_jeu():
+                    self.afficher_fin_jeu()
+                    
 if __name__ == "__main__":
     MenuPrincipal()
